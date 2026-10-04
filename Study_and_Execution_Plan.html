@@ -1,0 +1,252 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Study &amp; Execution Plan</title>
+<style>
+  @page { size: A4; margin: 14mm 13mm; }
+  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Georgia, "Times New Roman", serif; font-size: 10.3px; line-height: 1.42; color: #1d2433; margin: 0; }
+  h1 { font-size: 18.5px; color: #1c3556; margin: 0 0 3px; border-bottom: 2px solid #1c3556; padding-bottom: 4px; }
+  h2 { font-size: 14.5px; color: #1c3556; margin: 17px 0 6px; border-bottom: 1px solid #b9c4d4; padding-bottom: 2px; break-after: avoid; }
+  h3 { font-size: 12px; color: #2f5d8c; margin: 12px 0 4px; break-after: avoid; }
+  p { margin: 4px 0; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 9.3px; background: #eef1f5; padding: 0 3px; border-radius: 2px; }
+  .sub { font-size: 10px; color: #4a5568; margin-bottom: 8px; }
+  .note { font-size: 9.6px; color: #4a5568; }
+  table { border-collapse: collapse; width: 100%; margin: 5px 0 7px; font-size: 9.7px; break-inside: auto; }
+  tr { break-inside: avoid; }
+  th { background: #e9edf3; text-align: left; padding: 3px 6px; border: 1px solid #b9c4d4; }
+  td { padding: 3px 6px; border: 1px solid #c9d1dd; vertical-align: top; }
+  tr.hl td { background: #fff7e0; }
+  tr.done td { background: #eef7ee; color: #3a5a3a; }
+  .box { border: 1px solid #b9c4d4; background: #f3f6fa; border-radius: 4px; padding: 7px 10px; margin: 8px 0; break-inside: avoid; }
+  .warn { border-color: #e0c27a; background: #fdf4dc; }
+  .good { border-color: #8fc59a; background: #eef7ef; }
+  .bad  { border-color: #e0a3a3; background: #fbeeee; }
+  .new  { border-color: #7fa6d6; background: #eaf2fc; }
+  .grid { display: flex; gap: 10px; } .grid > div { flex: 1; }
+  .b { display: inline-block; font: bold 8.3px Arial, sans-serif; color: #fff; padding: 1px 6px; border-radius: 3px; letter-spacing: .3px; white-space: nowrap; }
+  .you { background: #2d6aa8; } .ptr { background: #3f8f4f; } .exam { background: #b04040; }
+  .code { background: #3f8f4f; } .rev { background: #7a4aa8; } .write { background: #7a4aa8; }
+  .edge { background: #c0702a; } .paper { background: #2f5a8c; } .new-tag { background: #d6531f; }
+  ul { margin: 3px 0 3px 17px; padding: 0; } li { margin: 1px 0; }
+  .pb { break-before: page; }
+  ol { margin: 3px 0 3px 18px; padding: 0; }
+</style>
+</head>
+<body>
+
+<h1>Speech-Based Depression Detection (GNN) — Full Semester Plan</h1>
+<div class="sub">
+  <b>Version 2 — updated 2026-10-04</b> (supersedes the 2026-09-14 plan; old copy kept as <code>Study_and_Execution_Plan_v1_2026-09-14.pdf</code>) &nbsp;|&nbsp;
+  <b>Mid-Review: Fri 9 Oct 2026</b> &nbsp;|&nbsp; Engineering freeze 5 Nov 2026, buffer to 9 Nov &nbsp;|&nbsp; Paper written after end-sem exams &nbsp;|&nbsp; Two-student team<br>
+  See <code>IMPLEMENTATION_PLAN.md</code> for full technical detail and <code>TRACKER.md</code> for live progress.
+</div>
+
+<div class="box new">
+  <b>What changed in v2 (read this first)</b>
+  <ol>
+    <li><b>Mid-Review is now Fri 9 Oct</b> (v1 assumed 26–30 Sep). Today is Sun 4 Oct, so <b>4–8 Oct is a 5-day Mid-Review sprint</b> (§5). It consumes the original P0 window (v1 target: 7 Oct), so the P0/P1/P2/P3 dates have been <b>re-baselined</b> (§8). The <b>5 Nov engineering freeze and the 7–9 Nov End-Review slot are unchanged</b>; the cost is absorbed by a shorter P3 wrap (4 → 3 days) and P1 landing on 18 Oct instead of 14 Oct.</li>
+    <li><b>Synced with the current Implementation Plan:</b> the guide's feature groups are now in scope (Set A extras, Set C linguistic features, feature-group ablation in P1); DAIC-WOZ ships only COVAREP + FORMANT, so eGeMAPS is extracted from raw audio with <code>opensmile</code>; ONNX/TorchScript smoke-test is part of P2; the P8 edge profile is Set A minus words/sec.</li>
+    <li><b>wav2vec2 probe is now the optional third baseline.</b> The Implementation Plan (§5) only requires the first two (SVM/RF, BiLSTM/GRU); Set B extraction is a multi-hour CPU pass and is otherwise a P4 stretch item.</li>
+    <li><b>End-Review deck:</b> the <i>feature-group ablation</i> (Set A vs. A+C, a P1 result) <b>is shown</b>; the <i>component ablation table</i> (P3) stays held back (§9).</li>
+  </ol>
+</div>
+
+<div class="box">
+  <b>Two tracks, one truth — rebalanced.</b> Institute rules require showing progress across two semesters. Holding back only P8 for next semester would look thin ("we did everything except demo it on a Pi") — so the split is rebalanced: the <b>entire project</b> (pipeline, baselines, GNN, full architecture work, edge deployment) is finished this semester by ~5 Nov. <b>Officially</b>, the End-Review deck presents only <b>P0 + P1 + a basic/flat P2 GNN</b> as complete. P3's full increments (pooling / anti-oversmoothing / adversarial head), the component ablation, fairness/interpretability analysis, and P8 are held back, listed only under "Future Scope," then officially revealed next semester with the paper.
+</div>
+<div class="box warn">
+  <b>Exam constraint:</b> End-Sem exams run 10–12 Nov (Lab) and 13–26 Nov (Theory) — overlapping almost the entire official End-Review window (7–26 Nov). The real presentation slot is therefore <b>7–9 Nov only</b> (Sat–Mon), followed by a 17-day project blackout to 26 Nov. The paper starts <b>27 Nov or later</b>.
+</div>
+
+<h2>1. Official Institute Timeline</h2>
+<table>
+  <tr><th style="width:3%">#</th><th style="width:16%">Date</th><th style="width:44%">Milestones</th><th>Remarks</th></tr>
+  <tr><td>1</td><td>31 Aug 2026</td><td>Tentative Title, Abstract, Keywords, References, Timeline</td><td>Hardcopy submission. (Already past — confirm submitted.)</td></tr>
+  <tr class="hl"><td>2</td><td><b>Fri 9 Oct 2026</b><br><span class="note">(official window was 16–30 Sep)</span></td><td>Problem Statement, Motivation, Lit. Review, Research Gap, Objectives, Proposed Methodology, Preliminary Implementation, References</td><td><b>Mid-Review presentation — rescheduled to 9 Oct.</b> Sprint plan in §5, deck outline in §10.</td></tr>
+  <tr><td>3</td><td>07–26 Nov 2026</td><td>Detailed Methodology/Implementation, Results, Performance Analysis, Limitations, Conclusions &amp; Future Scope, References</td><td><b>End-Review.</b> Real slot 7–9 Nov. P0+P1+basic P2 GNN shown complete; P3 hero model + P8 listed as future scope.</td></tr>
+  <tr><td>—</td><td>10–12 Nov 2026</td><td>End-Sem Exams — Laboratory</td><td>Project blackout begins</td></tr>
+  <tr><td>—</td><td>13–26 Nov 2026</td><td>End-Sem Exams — Theory</td><td>Project blackout continues</td></tr>
+</table>
+<p class="note">Assumption: only the Mid-Review date moved. If the End-Review slot has also been re-announced, update §1, §8 and §9.</p>
+
+<h2>2. Team &amp; Task Split</h2>
+<p class="note">Both students are individually assessed on contribution/understanding at each review — splitting tasks is for throughput, not to skip understanding your half.</p>
+<table>
+  <tr><th style="width:15%">Track</th><th style="width:17%">Owner</th><th>Responsibility</th></tr>
+  <tr><td><span class="b you">YOU</span></td><td>Data + GNN modeling</td><td>Mid-Review notebook (Steps 2–5); P0 pipeline + Set A features (eGeMAPS, prosody extras); P2 graph construction + RGAT encoder; P3 increments (6.1 / 6.3 / 6.4).</td></tr>
+  <tr><td><span class="b ptr">PARTNER</span></td><td>Baselines, text features + edge logistics</td><td>Mid-Review slide drafting and the speaker-independent fold file; P1 baselines (SVM/RF, BiLSTM/GRU; wav2vec2 probe optional), <b>Set C linguistic features</b>, feature-group ablation, CV harness; pre-stage the Pi/Jetson environment (OS, PyTorch/ONNX runtime, openSMILE).</td></tr>
+  <tr><td><span class="b you">YOU</span>+<span class="b ptr">PTR</span></td><td>Edge deployment (P8)</td><td>Joint once the P3 hero model is frozen: export, quantization, on-device benchmarking — the part shown to the mentor.</td></tr>
+  <tr><td><span class="b you">YOU</span>+<span class="b ptr">PTR</span></td><td>Decks &amp; paper</td><td>Split by section, but each of you must be able to explain the whole project, not just your half. <b>For the Mid-Review: each of you rehearses the other's slides</b> (§5).</td></tr>
+</table>
+
+<h2>3. Committed Scope vs. Future Work</h2>
+<div class="grid">
+  <div class="box good">
+    <b>Actually finished by ~5 Nov (internal):</b>
+    <ul>
+      <li><b>P0:</b> Ellie-stripping, segmentation, cache, EDA; Set A (eGeMAPS via <code>opensmile</code> + prosody/rhythm/CPP extras)</li>
+      <li><b>P1:</b> SVM/RF, BiLSTM/GRU, 5-fold speaker-independent CV; Set C linguistic features; feature-group ablation (A vs. A+C, each guide group alone)</li>
+      <li><b>P2:</b> multi-relational graph, RGAT encoder, flat readout, ONNX/TorchScript smoke-test</li>
+      <li><b>P3 full:</b> 6.1 pooling, 6.3 anti-oversmoothing, 6.4 adversarial gender head; component ablation, stats tests, fairness/interpretability</li>
+      <li><b>P8:</b> Set-A-only edge profile, ONNX export, INT8 quantization, on-device benchmark</li>
+    </ul>
+  </div>
+  <div>
+    <div class="box warn"><b>Done, but held back from the panel until next sem:</b> P3's full increments + component ablation + fairness + P8. Only a basic/flat P2 GNN goes in the Nov 7–9 deck (see §9). This keeps next semester's official reveal substantial, not just a Pi demo.</div>
+    <div class="box bad"><b>Baseline assumption if no slack appears:</b> P4 (cross-corpus), P5 (optional depth), P7 (video fusion) and 6.2 (contrastive pretraining) stay untried, named only as "Future Scope." See §3b for the conditional stretch tier.</div>
+  </div>
+</div>
+
+<h3>3b. Stretch Tier — Only If Ahead of Schedule</h3>
+<p class="note">Triggered if the committed scope (P0–P3 + P8) is done with time to spare — inside the Oct–Nov window or, more realistically, in the gap after end-sem exams (27 Nov+). Attempt in this order; stop when slack runs out; fold whatever finishes into the paper as real results. Never endanger the 5 Nov deadline. <b>Given the Mid-Review slip, expect this tier to start after 27 Nov, not before.</b></p>
+<table>
+  <tr><th style="width:5%">Order</th><th style="width:26%">Item</th><th style="width:27%">Cost</th><th>Why this order</th></tr>
+  <tr><td>1</td><td>P4 — E-DAIC cross-corpus (+ Set B wav2vec2/HuBERT stream, interpretability figures)</td><td>Moderate: download E-DAIC, zero-shot eval on the frozen hero model, optional light fine-tune</td><td>Highest value — both surveys call cross-corpus generalization the field's central open problem</td></tr>
+  <tr><td>2</td><td>P5 — 6.5 IB subgraph, then 6.6 population graph, then 6.7 acoustic-word edges</td><td>Variable per sub-item</td><td>Plan's own rule: keep each only if it beats the hero model — evaluate one at a time</td></tr>
+  <tr><td>3</td><td>P7 — video/CLNF fusion</td><td>High: ~75–135 GB extra download (~182 GB free as of 4 Oct — re-check first) + a second graph branch</td><td>Lowest priority, most expensive — realistically only reachable in the 27 Nov+ window</td></tr>
+</table>
+
+<h2>4. The Research Paper</h2>
+<p>Written only after the whole project (incl. edge deployment) is done — because of the exam blackout, <b>27 Nov or later</b>. Distinct from the Mid/End-Review written deliverables, which stay on their own institute deadlines. No fixed paper deadline yet — ask the mentor once next semester's final-review date is known.</p>
+
+<h2>5. Mid-Review Sprint — Sun 4 Oct → Fri 9 Oct</h2>
+<p>Goal: present a credible <b>preliminary implementation</b> (pandas + sklearn, no PyTorch) and cover all six rubric items. Work is in <code>notebooks/01_mid_review_features.ipynb</code>, which currently stops after <b>Step 1</b> (participant-only transcripts, labels, per-session summary for 189 sessions). Steps 2–5 remain.</p>
+<table>
+  <tr><th style="width:11%">Day</th><th style="width:5%"></th><th style="width:42%">YOU — notebook</th><th>PARTNER — slides &amp; support</th></tr>
+  <tr><td>Sun 4 Oct</td><td><span class="b you">YOU</span></td><td><b>Step 2: timing features from transcripts</b> — words/sec, response latency (group consecutive participant rows into one answer; leave latency <i>missing</i>, not zero, for sessions 451/458/480), pause gaps, filler rate. Sanity-check distributions.</td><td><b>Confirm what already exists</b> of the written deliverables (TRACKER shows them unchecked). Draft Problem Statement, Motivation, Lit. Review slides from Plan §0 and the two surveys. Read speech-marker background (§7).</td></tr>
+  <tr><td>Mon 5 Oct</td><td><span class="b you">YOU</span></td><td><b>Step 3: COVAREP features</b> — select frames that fall inside participant turns (100 Hz frames ↔ transcript timestamps), mask unvoiced frames (VUV) before F0 stats, per-session mean/std. Check column definitions in the AVEC 2017 documentation PDF.</td><td>Draft Research Gap (Plan §12 table), Objectives, and the Proposed Methodology diagram (pipeline → segments → multi-relational graph → GNN). Mention pooling / fairness only as one line "planned refinements" — P3/P8 detail stays held back.</td></tr>
+  <tr><td>Tue 6 Oct</td><td><span class="b you">YOU</span></td><td><b>Step 4: depressed vs. non-depressed</b> — boxplots per feature, Mann–Whitney U + effect size, Benjamini–Hochberg FDR across features. Compare direction with the literature (slower rate, longer latency/pauses, lower F0 variability).</td><td>Build the <b>subject-level 5-fold split file</b> (stratified on label × gender, saved as CSV) — reused later as the P1 CV harness. Start dataset slide from notebook 1c/1d numbers.</td></tr>
+  <tr><td>Wed 7 Oct</td><td><span class="b you">YOU</span>+<span class="b ptr">PTR</span></td><td><b>Step 5: baseline classifiers</b> — logistic regression, SVM, random forest on session-level features; balanced class weights; scaler fitted <i>inside</i> each training fold. Report UAR, macro-F1, AUC as mean ± std; also check on the official dev split.</td><td><b>Leakage review</b> of Step 5 (no subject in two folds, no scaling on the full data, no Ellie text). Fill Results + Limitations slides. Expect modest numbers — an honest 0.6-ish beats a leaky 0.9.</td></tr>
+  <tr><td>Thu 8 Oct</td><td><span class="b rev">BOTH</span></td><td colspan="2"><b>Slides frozen by noon.</b> Notebook: Restart &amp; Run All must succeed cleanly. Two full timed rehearsals; <b>each student presents the other's section</b> and answers the Q&amp;A list in §10. Print/upload requirements checked.</td></tr>
+  <tr class="hl"><td>Fri 9 Oct</td><td><span class="b rev">REV</span></td><td colspan="2"><b>Mid-Review presentation.</b> Evening: 30-minute retro, then start P0 on Sat 10 Oct.</td></tr>
+</table>
+<div class="box warn"><b>Floor for 9 Oct:</b> notebook Steps 1–4 run clean + <b>at least one baseline with honest speaker-independent CV</b> + slides covering all six rubric items. <b>Cut order if time runs short:</b> (1) extra plots, (2) SVM tuning (keep LR + RF), (3) Step 3's std features (keep means). Never cut leakage checks or the rehearsals.</div>
+
+<h2>6. Personal Calendar Overlay</h2>
+<table>
+  <tr><th style="width:9%">Window</th><th style="width:18%">Dates</th><th>What it's for</th></tr>
+  <tr><td><span class="b write">WRITE</span></td><td>14–15 Sep</td><td>Mid-Review written deliverables (v1 plan — confirm completion, see §5)</td></tr>
+  <tr><td><span class="b exam">EXAM</span></td><td>16–25 Sep</td><td>Mid-semester exams — no project work</td></tr>
+  <tr class="hl"><td><span class="b new-tag">SPRINT</span></td><td>4–8 Oct</td><td>Mid-Review sprint: notebook Steps 2–5, slides, rehearsal (§5)</td></tr>
+  <tr class="hl"><td><span class="b rev">REVIEW</span></td><td><b>Fri 9 Oct</b></td><td><b>Mid-Review presentation</b></td></tr>
+  <tr><td><span class="b code">CODE</span></td><td>10 Oct – 5 Nov</td><td>P0 → P1 → P2 → P3 core → P8, parallel work (~3.5 weeks)</td></tr>
+  <tr><td><span class="b rev">REVIEW</span></td><td>6–9 Nov</td><td>Final deck assembly, rehearsal, End-Review presentation (P0–P2 shown; P3/P8 = future scope for the panel)</td></tr>
+  <tr><td><span class="b exam">EXAM</span></td><td>10–12 Nov / 13–26 Nov</td><td>End-Sem Exams — Lab / Theory</td></tr>
+  <tr><td><span class="b paper">PAPER</span></td><td>27 Nov onward</td><td>Final research paper; stretch tier (§3b) if ahead</td></tr>
+</table>
+
+<h2>7. Prerequisite Knowledge — In Execution Order</h2>
+<table>
+  <tr><th style="width:5%">Step</th><th style="width:8%">Who</th><th style="width:13%">When</th><th style="width:20%">Topic</th><th>What to do</th></tr>
+  <tr class="done"><td>1</td><td><span class="b you">YOU</span></td><td>14–15 Sep</td><td>Python libraries</td><td>numpy arrays/indexing/broadcasting; pandas CSVs, filtering, groupby. <i>In active use in the notebook.</i></td></tr>
+  <tr class="hl"><td>2</td><td><span class="b you">YOU</span></td><td>4–7 Oct</td><td>Lightweight baseline (Mid-Review)</td><td>Notebook Steps 2–5 (§5): transcript timing features, COVAREP per-session mean/std, group tests, sklearn LR/SVM/RF, UAR/F1/AUC.</td></tr>
+  <tr class="hl"><td>2a</td><td><span class="b you">YOU</span>+<span class="b ptr">PTR</span></td><td>4–7 Oct (≈30 min/day)</td><td>Speech markers of depression <span class="b new-tag">NEW</span></td><td>Why reduced F0 variability, slower rate, longer pauses/latency, jitter/shimmer/HNR/CPP relate to depression (psychomotor retardation, flat affect). SDR-survey §IV-B; <code>documents/</code> (Gratch 2014, Cummins 2015, COVAREP). Needed to defend every slide in Q&amp;A.</td></tr>
+  <tr class="hl"><td>2b</td><td><span class="b you">YOU</span></td><td>6 Oct</td><td>Comparing groups statistically <span class="b new-tag">NEW</span></td><td>Mann–Whitney U, effect size (rank-biserial/Cliff's δ), multiple-comparison correction (BH-FDR); bootstrap CI (reused in §8 of the Implementation Plan).</td></tr>
+  <tr><td>3b</td><td><span class="b ptr">PTR</span></td><td>4–7 Oct, then 10–14 Oct</td><td>Classical ML, then RNNs</td><td>sklearn pipelines, CV without leakage (4–7 Oct, feeds the fold file and Step 5 review); LSTM/GRU basics for the BiLSTM baseline (10–14 Oct).</td></tr>
+  <tr><td>3</td><td><span class="b you">YOU</span></td><td>10–14 Oct <span class="note">(moved from 1–7 Oct)</span></td><td>PyTorch fundamentals</td><td>Tensors, autograd, feedforward net on a toy dataset, full training loop. ~1 h/day alongside P0.</td></tr>
+  <tr><td>3c</td><td><span class="b you">YOU</span>/<span class="b ptr">PTR</span></td><td>10–14 Oct</td><td>Feature tooling <span class="b new-tag">NEW</span></td><td><b>YOU:</b> <code>opensmile</code> (eGeMAPS v02) and Praat/<code>parselmouth</code> (syllable nuclei, pauses, CPPS, F0 slope). <b>PTR:</b> text features for Set C — NRC Emotion Lexicon or VADER, pronoun/absolutist/filler counting; participant turns only.</td></tr>
+  <tr><td>4</td><td><span class="b you">YOU</span></td><td>15–17 Oct</td><td>GNNs on toy graphs</td><td>PyG tutorial: Cora with GCNConv then GATConv; trace one message-passing layer by hand.</td></tr>
+  <tr><td>5</td><td><span class="b you">YOU</span>+<span class="b ptr">PTR</span></td><td>28 Oct – 1 Nov</td><td>Export &amp; quantization</td><td>TorchScript/ONNX export of a small model; INT8 post-training quantization.</td></tr>
+</table>
+
+<h2>8. Week-by-Week Execution Schedule (Re-baselined — Real Deadline: Presentable by 9 Nov)</h2>
+<table>
+  <tr><th style="width:11%">Dates</th><th style="width:9%">Phase</th><th>Work</th></tr>
+  <tr class="done"><td>Sep 14–15</td><td><span class="b write">WRITE</span></td><td>Mid-Review sections drafted from Implementation Plan §0, §2–6, §12 and the two surveys <span class="note">(confirm; see §5)</span>.</td></tr>
+  <tr class="done"><td>Sep 16–25</td><td><span class="b exam">EXAM</span></td><td>Mid-semester exams.</td></tr>
+  <tr class="hl"><td>Oct 4–8</td><td><span class="b new-tag">SPRINT</span></td><td>Mid-Review sprint — notebook Steps 2–5, slides, two rehearsals (§5).</td></tr>
+  <tr class="hl"><td>Fri Oct 9</td><td><span class="b rev">REV</span></td><td><b>Mid-Review presentation.</b></td></tr>
+  <tr><td>Oct 10–13</td><td>P0 <span class="b you">YOU</span><br>P1 <span class="b ptr">PTR</span></td><td><b>YOU:</b> Step 3 + <code>preprocess.py</code>, <code>build_graph.py</code> stub, <b>cache for all 189 subjects from COVAREP + FORMANT</b>, eGeMAPS extraction via <code>opensmile</code>, EDA notebook. <b>PTR:</b> promote the fold file to the CV harness; <code>features_linguistic.py</code> (Set C); Step 3b RNNs; start SVM/RF on session-level features.<br><b>Gate A — Tue 13 Oct: cache exists for all 189 subjects.</b> Partner's P1 baselines depend on it.</td></tr>
+  <tr><td>Oct 14–18</td><td>P1 <span class="b ptr">PTR</span><br>P0 polish <span class="b you">YOU</span></td><td><b>PTR:</b> SVM/RF on eGeMAPS, BiLSTM/GRU, feature-group ablation (each guide group alone, Set A vs. A+C), leakage-checked CV, numbers compared with published AVEC 2016 DAIC-WOZ speech baselines. wav2vec2 probe only if time allows. <b>YOU:</b> append Set A extras (CPP, syllable/articulation rate, pause stats, F0 slope, response latency) via <code>features_prosody.py</code>; start P2 design and Step 4 (Oct 15–17). <b>P1 done Sun 18 Oct.</b></td></tr>
+  <tr><td>Oct 15–22</td><td>P2 <span class="b you">YOU</span></td><td>Step 4, then graph edges (E_seq / E_knn / optional E_rec), RGAT encoder, flat readout, trained through the same CV harness; compare vs. BiLSTM; <b>ONNX/TorchScript smoke-test of the RGAT block</b>. <b>P2 done Thu 22 Oct.</b><br><b>Gate B — Thu 22 Oct:</b> basic GNN trained and compared. If not, apply the descope rule below before starting P3.</td></tr>
+  <tr><td>Oct 23–28</td><td>P3 core <span class="b you">YOU</span></td><td>6.1 pooling + 6.3 anti-oversmoothing + 6.4 adversarial head; component ablation table. <span class="b ptr">PTR</span>: pre-stage Pi/Jetson environment; <b>record the exact board models</b> (decides the latency/RAM budget).</td></tr>
+  <tr><td>Oct 29–31</td><td>P3 wrap <span class="b you">YOU</span></td><td>McNemar/bootstrap tests, fairness slice, interpretability figures. <b>Freeze hero model Sat 31 Oct (Gate C).</b> Only if ahead: 6.2. <span class="note">(Wrap shortened from 4 to 3 days vs. v1.)</span></td></tr>
+  <tr><td>Nov 1–5</td><td>EDGE <span class="b edge">P8</span></td><td>Step 5. Set-A edge profile (minus words/sec), export frozen backbone, fixed ~256-node cap, on-device kNN, INT8 quantization, benchmark Pi/Jetson, measure accuracy gap. <b>Demo to mentor by 5 Nov.</b></td></tr>
+  <tr><td>Nov 6</td><td>Buffer</td><td>Finish assembling the End-Review deck from artifacts produced along the way (§9); rehearse.</td></tr>
+  <tr><td>Nov 7–9</td><td><span class="b rev">REV</span></td><td><b>End-Review presentation</b> — P0 + P1 + basic P2 GNN only (realistic slot, before Lab exams start).</td></tr>
+  <tr><td>Nov 10–26</td><td><span class="b exam">EXAM</span></td><td>End-Sem Exams (Lab 10–12, Theory 13–26) — full blackout.</td></tr>
+  <tr><td>Nov 27+</td><td><span class="b paper">PAPER</span></td><td>Final research paper. If ahead of schedule, work the stretch tier (§3b) in order — P4 → P5 sub-items → P7 — and fold whatever finishes into the paper as real results.</td></tr>
+</table>
+<div class="box warn">
+  <b>5 Nov is the real engineering freeze</b> (2-day buffer before presenting). <b>Descope order if the schedule slips:</b> drop 6.2 first, then 6.4, then extra 6.3 controls — <b>never P8</b>. <b>New trigger:</b> if P2 is not done by Sat 24 Oct, start P3 with 6.1 + 6.4 only and treat 6.3 as the last item; if P1 is not done by Wed 21 Oct, drop the wrap-up of the wav2vec2 probe and any Set A extras not yet in the cache — the floor is ≥ 2 baselines.
+</div>
+
+<h2>9. End-Review Deck — What Goes In vs. What's Held Back</h2>
+<p class="note">Rebalanced per §3: only P0 / P1 / basic-P2 are presented as complete. P3's full increments and P8 are built for real but kept out of this deck's "Results" — they appear only in "Future Scope," worded as genuine near-term plans.</p>
+<table>
+  <tr><th style="width:19%">Deck section</th><th style="width:55%">Content</th><th>Ready when</th></tr>
+  <tr><td>Methodology</td><td>Data pipeline (P0), guide's feature groups (Set A, Set C), multi-relational graph, basic RGAT + flat-readout GNN (P2)</td><td>Oct 13 / Oct 22</td></tr>
+  <tr><td>Results</td><td>P1 baselines vs. basic P2 GNN, 5-fold speaker-independent CV (UAR, macro-F1, AUC; mean ± std)</td><td>Oct 22</td></tr>
+  <tr><td>Performance Analysis</td><td>GNN vs. BiLSTM comparison; <b>feature-group ablation</b> (each guide group alone, Set A vs. A+C — a P1 result, shown). <b>No component ablation table</b> — that is P3, held back.</td><td>Oct 22</td></tr>
+  <tr><td>Limitations</td><td>Small dataset, self-report labels, single corpus, audio-first (linguistic features come from human transcripts), architecture still basic</td><td>Oct 22</td></tr>
+  <tr><td>Conclusions &amp; Future Scope</td><td>Name P3 increments (pooling / anti-oversmoothing / adversarial / component ablation), P8 edge deployment, P4, P5, P7, 6.2 — all as planned future work</td><td>Nov 6</td></tr>
+  <tr><td>Final assembly &amp; rehearsal</td><td>—</td><td>Nov 6</td></tr>
+</table>
+<p class="note">P3 and P8 are still actually built on the Oct 23 – Nov 5 schedule (§8) and demoed privately to the mentor — they just don't appear in this deck's Results section.</p>
+
+<h2>10. Mid-Review Deliverable Mapping &amp; Deck Outline</h2>
+<table>
+  <tr><th style="width:20%">Rubric item</th><th>Source material</th></tr>
+  <tr><td>Problem Statement</td><td>Implementation Plan §0 — speech-based depression screening, binary classification (PHQ-8 ≥ 10)</td></tr>
+  <tr><td>Motivation</td><td>Surveys' framing: scalable, non-invasive mental-health screening; speaker-independent evaluation matters</td></tr>
+  <tr><td>Literature Review</td><td>Two grounding surveys (SDR-survey, AI-review) + <code>documents/</code> (Gratch 2014, COVAREP, PHQ-8, Cummins 2015)</td></tr>
+  <tr><td>Research Gap</td><td>Plan §12 traceability table — no consensus on graph construction, interpretability, bias, cross-corpus generalization; guide's call to combine feature groups</td></tr>
+  <tr><td>3–4 Objectives</td><td>Speaker-independent classifier; combine complementary feature groups (prosodic, voice-quality, spectral, temporal, linguistic); graph-based representation; baseline benchmark; fairness/interpretability</td></tr>
+  <tr><td>Proposed Methodology</td><td>Plan §2–4 condensed (pipeline → 3 s segments → multi-relational graph → RGAT). Pooling / adversarial head as one "planned refinements" line only.</td></tr>
+  <tr><td>Preliminary Implementation</td><td><code>01_mid_review_features.ipynb</code> Steps 1–5: participant-only transcripts, timing + COVAREP features, group comparison, LR/SVM/RF with honest CV. Real numbers, real caveats.</td></tr>
+</table>
+
+<h3>Suggested slide flow (≈ 11 slides)</h3>
+<table>
+  <tr><th style="width:4%">#</th><th style="width:33%">Slide</th><th style="width:10%">Draft by</th><th>Key content</th></tr>
+  <tr><td>1</td><td>Title &amp; team</td><td>Both</td><td>Project title, guide, team, date</td></tr>
+  <tr><td>2</td><td>Problem &amp; motivation</td><td><span class="b ptr">PTR</span></td><td>Why speech, why binary screening, why it matters</td></tr>
+  <tr><td>3</td><td>Literature review</td><td><span class="b ptr">PTR</span></td><td>Two surveys + the key points taken from each</td></tr>
+  <tr><td>4</td><td>Research gap</td><td><span class="b ptr">PTR</span></td><td>Condensed Plan §12 table</td></tr>
+  <tr><td>5</td><td>Objectives</td><td><span class="b ptr">PTR</span></td><td>3–4 measurable objectives</td></tr>
+  <tr><td>6</td><td>Dataset: DAIC-WOZ</td><td><span class="b you">YOU</span></td><td>189 sessions, label balance (~30 % depressed), gender split, session length, Ellie-stripping and why</td></tr>
+  <tr><td>7</td><td>Feature groups (guide's guidance)</td><td><span class="b you">YOU</span></td><td>Prosodic / voice quality / spectral / temporal / linguistic, with the source of each feature (Plan §3 table)</td></tr>
+  <tr><td>8</td><td>Proposed methodology</td><td><span class="b ptr">PTR</span> + <span class="b you">YOU</span></td><td>Pipeline diagram → segments → multi-relational graph → RGAT; speaker-independent evaluation</td></tr>
+  <tr><td>9</td><td>Preliminary implementation &amp; findings</td><td><span class="b you">YOU</span></td><td>Features computed so far, boxplots, which differ significantly after FDR, direction vs. literature</td></tr>
+  <tr><td>10</td><td>Baseline results &amp; limitations</td><td><span class="b you">YOU</span> + <span class="b ptr">PTR</span></td><td>UAR / macro-F1 / AUC mean ± std; why accuracy is not reported alone; honest limitations</td></tr>
+  <tr><td>11</td><td>Plan to End-Review</td><td>Both</td><td>P0 → P1 → P2 timeline to 9 Nov; no P3/P8 detail</td></tr>
+</table>
+
+<h3>Likely panel questions — both of you should answer all of them</h3>
+<ul>
+  <li>Why drop Ellie's text but keep her timestamps? (Label leakage vs. response latency.)</li>
+  <li>What is PHQ-8, where does the cut-off of 10 come from, and what are its limits as a label?</li>
+  <li>Why split by subject and not by segment? What would go wrong otherwise?</li>
+  <li>Why UAR / F1 rather than accuracy? (≈ 30 % depressed class.)</li>
+  <li>Why would a graph help over mean-pooled features or a BiLSTM? Which edge types and why?</li>
+  <li>Which of your features differed significantly <i>after</i> multiple-comparison correction, and does the direction match the literature?</li>
+  <li>What is COVAREP, and why do we use voiced frames only for pitch statistics?</li>
+  <li>Why does the dataset's small size make your numbers unstable, and how do you plan to quantify that? (Repeated CV, bootstrap CIs.)</li>
+</ul>
+
+<h2>11. Dataset &amp; Environment Status (checked 2026-10-04)</h2>
+<table>
+  <tr><th style="width:36%">Component</th><th>Status</th></tr>
+  <tr><td>DAIC-WOZ (audio, transcripts, COVAREP, FORMANT, splits)</td><td>Complete — 189/189 sessions, ~16 GB</td></tr>
+  <tr><td>eGeMAPS features</td><td><b>Not shipped with DAIC-WOZ</b> (verified against the AVEC 2017 documentation). Extract from raw audio with <code>opensmile</code> in P0 (minutes, one-time).</td></tr>
+  <tr><td>Python environment</td><td><code>scikit-learn</code>, <code>scipy</code>, <code>pandas</code> present. <b>Not yet found:</b> <code>torch</code>, <code>torch-geometric</code>, <code>opensmile</code>, <code>praat-parselmouth</code>, <code>vaderSentiment</code>. Install by <b>Sat 10 Oct</b> (needed from P0; PyTorch from 10 Oct; PyG from 15 Oct). Pin versions in <code>requirements.txt</code>.</td></tr>
+  <tr><td>Source tree</td><td><code>src/</code> and <code>data/cache/</code> not created yet — P0 deliverable. Only the notebook and <code>scripts/</code> exist.</td></tr>
+  <tr><td>DAIC-WOZ visual/CLNF features</td><td>Not needed — P7 out of scope for the committed plan</td></tr>
+  <tr><td>E-DAIC / DEPAC</td><td>Not needed — P4 is stretch tier; download only if reached</td></tr>
+  <tr><td>Raspberry Pi / Jetson Nano</td><td>Already in hand. <b>Note the exact model(s)</b> — the P8 latency/RAM budget depends on it (Implementation Plan §15).</td></tr>
+  <tr><td>Free disk space (C:)</td><td>~182 GB — ample</td></tr>
+</table>
+
+<h2>12. Non-Negotiable Floors</h2>
+<div class="box good">
+  <b>By Fri 9 Oct (Mid-Review):</b> notebook Steps 1–4 running cleanly, at least one baseline classifier with honest speaker-independent CV, slides covering all six rubric items, both students able to present any slide.<br>
+  <b>By 5 Nov:</b> P0 (cached pipeline) + P1 (≥ 2 baselines) + P2 (working GNN, honestly compared) + P8 (edge deployment demoed to mentor). P3's optional increments can trim under pressure — the pipeline, a real baseline comparison, and the edge demo are what this compressed semester exists to guarantee.
+</div>
+
+<p class="note">Cross-reference with <code>IMPLEMENTATION_PLAN.md</code> and <code>TRACKER.md</code> in the project repository. TRACKER.md was synced to these dates on 2026-10-04.</p>
+
+</body>
+</html>
