@@ -1,0 +1,6 @@
+Method,F1 depressed,F1 not depressed,Precision depressed,Recall depressed
+"AVEC 2016 baseline: audio (COVAREP, linear SVM)",0.462,0.682,0.316,0.857
+AVEC 2016 baseline: video (facial features),0.5,0.896,0.6,0.428
+"Ours (audio, 25 features): Gaussian Naive Bayes",0.56,0.7555555555555555,0.5384615384615384,0.5833333333333334
+"Ours (audio, 25 features): Logistic Regression",0.4666666666666667,0.6,0.3888888888888889,0.5833333333333334
+"Ours (audio, 25 features): Dummy (chance floor)",0.0,0.7931034482758621,0.0,0.0
