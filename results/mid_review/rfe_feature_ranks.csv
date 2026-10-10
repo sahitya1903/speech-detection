@@ -1,0 +1,26 @@
+feature,Domain,RFE rank (all 142),Kept in top 8 (all 142),Median rank across folds,Times in top 8 (of 15 folds)
+qoq_sd,voice,1,True,3.0,12
+h1h2_mean,voice,2,True,4.0,13
+f0_range_st,voice,3,True,3.0,12
+f0_sd_st,voice,4,True,4.0,12
+rd_mean,voice,5,True,5.0,14
+median_latency_s,timing,6,True,7.0,10
+peakslope_sd,voice,7,True,9.0,7
+voiced_pct,voice,8,True,9.0,7
+laughter_per_min,timing,9,False,10.0,5
+mean_pause_s,timing,10,False,11.0,3
+naq_mean,voice,11,False,15.0,2
+rd_sd,voice,12,False,12.0,3
+fillers_per_100w,timing,13,False,12.0,2
+sigh_per_min,timing,14,False,15.0,2
+naq_sd,voice,15,False,13.0,5
+f2_sd_hz,voice,16,False,14.0,2
+f1_sd_hz,voice,17,False,13.0,2
+f0_median_hz,voice,18,False,16.0,3
+words_per_answer,timing,19,False,18.0,1
+peakslope_mean,voice,20,False,16.0,0
+pause_pct,timing,21,False,20.0,1
+pauses_per_min,timing,22,False,19.0,0
+qoq_mean,voice,23,False,22.0,1
+h1h2_sd,voice,24,False,21.0,1
+words_per_sec,timing,25,False,22.0,0
