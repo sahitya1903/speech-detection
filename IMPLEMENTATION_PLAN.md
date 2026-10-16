@@ -24,7 +24,7 @@ Grounding papers:
 
 ## 0.5 This-semester timeline, team split & presentation strategy
 
-This is officially a **two-semester** capstone project, but per the mentor's guidance the entire technical scope below — through P3 (core increments) and P8 (edge deployment) — is being completed within this single semester. Institute rules still require showing incremental progress across both semesters, so there are two tracks from here on. This section is the technical-plan-side summary; the "Study & Execution Plan" PDF (generated 2026-09-14, updated iteratively as constraints were discovered) is the authoritative day-to-day calendar — keep the two in sync rather than letting them drift.
+This is officially a **two-semester** capstone project, but per the mentor's guidance the entire technical scope below — through P3 (core increments) and P8 (edge deployment) — is being completed within this single semester. Institute rules still require showing incremental progress across both semesters, so there are two tracks from here on. This section is the summary; §16 holds the detailed calendar (official dates, week-by-week schedule, gates, descope rules, End-Review deck plan). It replaces the former "Study & Execution Plan" document.
 
 **Real (internal) deadline:** P0, P1, P2, and P3-core (6.1 hierarchical pooling, 6.3 anti-oversmoothing, 6.4 adversarial gender head) plus P8 are engineering-complete by **~5 Nov 2026** (a 2-day buffer before the actual End-Review presentation slot). P4, P5, and P7 are a conditional **stretch tier** (below) — attempted only if ahead of schedule, never at the cost of the 5 Nov deadline. 6.2 (contrastive pretraining) is likewise attempted only if P3-core finishes early.
 
@@ -433,3 +433,109 @@ If Jetson Nano specifically (not Pi) turns out to have enough headroom, Set B ca
 5. **Benchmark:** define and hit a concrete latency/RAM budget per target board (e.g., end-to-end inference under N seconds on a 3-minute recording, under M MB resident) — pick N/M once you know which Pi/Nano model you're targeting; these differ enough (Pi 4 vs Pi 5, Nano vs Nano 2GB/Orin Nano) that it's not worth guessing now.
 
 **Exit criterion:** edge-profile model runs end-to-end on the target board within the defined latency/RAM budget, with the accuracy gap vs. the full model measured and reported.
+
+---
+
+## 16. Semester calendar & execution schedule
+
+Merged from the former "Study & Execution Plan" (v2, baselined 2026-10-04). §0.5 gives the strategy; this section gives the dates. Live progress is in `TRACKER.md`.
+
+### 16.1 Official institute timeline
+
+| # | Date | Milestones | Remarks |
+|---|---|---|---|
+| 1 | 31 Aug 2026 | Tentative Title, Abstract, Keywords, References, Timeline | Hardcopy submission (done) |
+| 2 | Official window 16–30 Sep; moved to 9 Oct, then 12 Oct 2026 | Problem Statement, Motivation, Lit. Review, Research Gap, Objectives, Proposed Methodology, Preliminary Implementation, References | **Mid-Review** (see §16.5) |
+| 3 | 07–26 Nov 2026 (real slot 7–9 Nov) | Detailed Methodology/Implementation, Results, Performance Analysis, Limitations, Conclusions & Future Scope, References | **End-Review.** P0 + P1 + basic P2 GNN shown complete; P3 hero model + P8 listed as future scope (§16.6) |
+| — | 10–12 Nov 2026 | End-Sem Exams — Laboratory | Project blackout |
+| — | 13–26 Nov 2026 | End-Sem Exams — Theory | Project blackout |
+
+### 16.2 Task split
+
+Both students are individually assessed on contribution/understanding at each review — splitting tasks is for throughput, not to skip understanding the other half. (The team has three members, but the major technical work is split between two, as below.)
+
+| Track | Owner | Responsibility |
+|---|---|---|
+| Data + GNN modelling | Student A ("you") | Mid-Review notebook; P0 pipeline + Set A features (eGeMAPS, prosody extras); P2 graph construction + RGAT encoder; P3 increments (6.1 / 6.3 / 6.4) |
+| Baselines, text features, edge logistics | Student B ("partner") | Speaker-independent fold file → P1 CV harness; P1 baselines (SVM/RF, BiLSTM/GRU; wav2vec2 probe optional); **Set C linguistic features**; feature-group ablation; pre-stage the Pi/Jetson environment (OS, PyTorch/ONNX runtime, openSMILE) |
+| Edge deployment (P8) | Both | Once the P3 hero model is frozen: export, quantization, on-device benchmarking — the part demoed to the mentor |
+| Decks & paper | Both | Split by section, but each student must be able to explain the whole project; rehearse each other's slides |
+
+### 16.3 Week-by-week schedule (real deadline: presentable by 9 Nov)
+
+Dates below were baselined on 4 Oct assuming a 9 Oct Mid-Review; the Mid-Review later moved to 12 Oct, so re-check the Oct 10–13 window against `TRACKER.md`.
+
+| Dates | Phase | Work |
+|---|---|---|
+| Sep 14–15 | WRITE | Mid-Review written sections drafted from §0, §2–6, §12 and the two surveys |
+| Sep 16–25 | EXAM | Mid-semester exams |
+| Oct 4–8 | SPRINT | Mid-Review notebook, slides, rehearsals (§16.5) |
+| Oct 10–13 | P0 (A) / P1 (B) | **A:** `preprocess.py`, `build_graph.py` stub, **cache for all 189 subjects from COVAREP + FORMANT**, eGeMAPS via `opensmile`, EDA notebook. **B:** promote the fold file to the CV harness; `features_linguistic.py` (Set C); RNN basics; start SVM/RF on session-level features. **Gate A — Tue 13 Oct: cache exists for all 189 subjects** (B's P1 baselines depend on it). |
+| Oct 14–18 | P1 (B) / P0 polish (A) | **B:** SVM/RF on eGeMAPS, BiLSTM/GRU, feature-group ablation (each guide group alone, Set A vs. A+C), leakage-checked CV, compare with published AVEC 2016 speech baselines; wav2vec2 probe only if time allows. **A:** Set A extras via `features_prosody.py` (CPP, syllable/articulation rate, pause stats, F0 slope, response latency); start P2 design and GNN toy-graph study. **P1 done Sun 18 Oct.** |
+| Oct 15–22 | P2 (A) | Graph edges (E_seq / E_knn / optional E_rec), RGAT encoder, flat readout, trained through the same CV harness; compare vs. BiLSTM; **ONNX/TorchScript smoke-test of the RGAT block**. **Gate B — Thu 22 Oct: basic GNN trained and compared**; if not, apply the descope rule below before starting P3. |
+| Oct 23–28 | P3 core (A) | 6.1 pooling + 6.3 anti-oversmoothing + 6.4 adversarial head; component ablation table. **B:** pre-stage Pi/Jetson; **record the exact board models** (sets the latency/RAM budget). |
+| Oct 29–31 | P3 wrap (A) | McNemar/bootstrap tests, fairness slice, interpretability figures. **Gate C — Sat 31 Oct: freeze hero model.** 6.2 only if ahead. |
+| Nov 1–5 | P8 (both) | Set-A edge profile (minus words/sec), export frozen backbone, fixed ~256-node cap, on-device kNN, INT8 quantization, Pi/Jetson benchmark, measure accuracy gap. **Demo to mentor by 5 Nov.** |
+| Nov 6 | Buffer | Finish the End-Review deck from artifacts produced along the way (§16.6); rehearse |
+| Nov 7–9 | REVIEW | **End-Review presentation** — P0 + P1 + basic P2 GNN only |
+| Nov 10–26 | EXAM | End-Sem exams — full blackout |
+| Nov 27+ | PAPER | Final research paper; stretch tier (§0.5) in order P4 → P5 → P7 if ahead |
+
+**5 Nov is the real engineering freeze** (2-day buffer before presenting). **Descope order if the schedule slips:** drop 6.2 first, then 6.4, then extra 6.3 controls — **never P8**. If P2 is not done by Sat 24 Oct, start P3 with 6.1 + 6.4 only and treat 6.3 as the last item. If P1 is not done by Wed 21 Oct, drop the wav2vec2 probe and any Set A extras not yet in the cache — the floor is ≥ 2 baselines.
+
+### 16.4 Prerequisite knowledge, in execution order
+
+| Step | Who | When | Topic | What to do |
+|---|---|---|---|---|
+| 1 | A | 14–15 Sep (done) | Python libraries | numpy arrays/indexing/broadcasting; pandas CSVs, filtering, groupby |
+| 2 | A | 4–7 Oct (done) | Lightweight baseline | Mid-Review notebook: timing + COVAREP features, group tests, sklearn classifiers, UAR/F1/AUC |
+| 2a | Both | 4–7 Oct | Speech markers of depression | Why reduced F0 variability, slower rate, longer pauses/latency, jitter/shimmer/HNR/CPP relate to depression (psychomotor retardation, flat affect). SDR-survey §IV-B; `documents/` (Gratch 2014, Cummins 2015, COVAREP) |
+| 2b | A | 6 Oct | Comparing groups statistically | Mann–Whitney U, effect size (rank-biserial / Cliff's δ), BH-FDR correction, bootstrap CI (reused in §8) |
+| 3b | B | 4–7 Oct, then 10–14 Oct | Classical ML, then RNNs | sklearn pipelines, CV without leakage; LSTM/GRU basics for the BiLSTM baseline |
+| 3 | A | 10–14 Oct | PyTorch fundamentals | Tensors, autograd, a feedforward net on a toy dataset, a full training loop (~1 h/day alongside P0) |
+| 3c | A / B | 10–14 Oct | Feature tooling | **A:** `opensmile` (eGeMAPS v02), Praat/`parselmouth` (syllable nuclei, pauses, CPPS, F0 slope). **B:** Set C text features — NRC Emotion Lexicon or VADER, pronoun/absolutist/filler counts; participant turns only |
+| 4 | A | 15–17 Oct | GNNs on toy graphs | PyG tutorial: Cora with GCNConv then GATConv; trace one message-passing layer by hand |
+| 5 | Both | 28 Oct – 1 Nov | Export & quantization | TorchScript/ONNX export of a small model; INT8 post-training quantization |
+
+### 16.5 Mid-Review record
+
+Goal was a credible preliminary implementation (pandas + sklearn, no PyTorch) covering all rubric items. Delivered in `notebooks/01_mid_review_features_expanded.ipynb` (participant-only transcripts → timing + COVAREP features → depressed vs. non-depressed comparison with FDR → baseline classifiers with speaker-independent CV), results in `results/mid_review/`, slides in `Mid_Review_Presentation.pptx`, walkthrough in `Mid_Review_Notebook_Guide.pdf`.
+
+Rubric mapping used for the deck: Problem Statement ← §0; Motivation ← the surveys' framing (scalable, non-invasive screening); Literature Review ← the two surveys + `documents/`; Research Gap ← §12; Objectives ← speaker-independent classifier, combined feature groups, graph representation, baseline benchmark, fairness/interpretability; Proposed Methodology ← §2–4 condensed (pooling / adversarial head as one "planned refinements" line only).
+
+### 16.6 End-Review deck — what goes in vs. what's held back
+
+Only P0 / P1 / basic-P2 are presented as complete. P3's full increments and P8 are built for real on the §16.3 schedule and demoed privately to the mentor, but appear in the deck only under "Future Scope."
+
+| Deck section | Content | Ready when |
+|---|---|---|
+| Methodology | Data pipeline (P0), guide's feature groups (Set A, Set C), multi-relational graph, basic RGAT + flat-readout GNN (P2) | Oct 13 / Oct 22 |
+| Results | P1 baselines vs. basic P2 GNN, 5-fold speaker-independent CV (UAR, macro-F1, AUC; mean ± std) | Oct 22 |
+| Performance Analysis | GNN vs. BiLSTM; **feature-group ablation** (each guide group alone, Set A vs. A+C — a P1 result, shown). **No component ablation table** (P3, held back) | Oct 22 |
+| Limitations | Small dataset, self-report labels, single corpus, linguistic features come from human transcripts, architecture still basic | Oct 22 |
+| Conclusions & Future Scope | P3 increments (pooling / anti-oversmoothing / adversarial / component ablation), P8 edge deployment, P4, P5, P7, 6.2 — as planned future work | Nov 6 |
+
+**Likely panel questions — every team member should be able to answer all of them:**
+- Why drop Ellie's text but keep her timestamps? (Label leakage vs. response latency.)
+- What is PHQ-8, where does the cut-off of 10 come from, and what are its limits as a label?
+- Why split by subject and not by segment? What would go wrong otherwise?
+- Why UAR / F1 rather than accuracy? (≈ 30 % depressed class.)
+- Why would a graph help over mean-pooled features or a BiLSTM? Which edge types and why?
+- Which features differed significantly *after* multiple-comparison correction, and does the direction match the literature?
+- What is COVAREP, and why use voiced frames only for pitch statistics?
+- Why does the small dataset make the numbers unstable, and how is that quantified? (Repeated CV, bootstrap CIs.)
+
+### 16.7 Environment status (checked 2026-10-04)
+
+| Component | Status |
+|---|---|
+| DAIC-WOZ (audio, transcripts, COVAREP, FORMANT, splits) | Complete — 189/189 sessions, ~16 GB |
+| eGeMAPS | Not shipped with DAIC-WOZ; extract from raw audio with `opensmile` in P0 |
+| Python environment | `scikit-learn`, `scipy`, `pandas` present. Still needed: `torch`, `torch-geometric`, `opensmile`, `praat-parselmouth`, `vaderSentiment`. Pin versions in `requirements.txt` |
+| Source tree | `src/` and `data/cache/` are P0 deliverables |
+| CLNF video features, E-DAIC, DEPAC | Not needed unless the stretch tier is reached |
+| Raspberry Pi / Jetson Nano | In hand — note the exact models (§15 latency/RAM budget depends on it) |
+
+### 16.8 Non-negotiable floors
+
+- **By 5 Nov:** P0 (cached pipeline) + P1 (≥ 2 baselines) + P2 (working GNN, honestly compared) + P8 (edge deployment demoed to mentor). P3's optional increments can be trimmed under pressure — the pipeline, a real baseline comparison and the edge demo are what this compressed semester exists to guarantee.

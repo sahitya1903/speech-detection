@@ -1,8 +1,8 @@
 # Project Tracker
 
-Task breakdown of [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md), by phase. See IMPLEMENTATION_PLAN.md §0.5 for this semester's compressed timeline, team split, and dual-track presentation strategy — phase headings below carry target dates from that plan. The "Study & Execution Plan" PDF (v2, updated 2026-10-04) is the authoritative day-to-day calendar.
+Task breakdown of [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md), by phase. See IMPLEMENTATION_PLAN.md §0.5 for this semester's compressed timeline, team split, and dual-track presentation strategy — phase headings below carry target dates from that plan. IMPLEMENTATION_PLAN.md §16 is the authoritative day-to-day calendar.
 
-**Mid-Review is Fri 9 Oct 2026 (rescheduled from 26–30 Sep); 4–8 Oct is a Mid-Review sprint, so P0–P3 dates were re-baselined on 4 Oct (Study & Execution Plan v2 §5, §8).** **Real engineering deadline: P0–P3(core)+P8 done by ~5 Nov 2026 (unchanged).** Official End-Review (~7–9 Nov, before End-Sem exams 10–26 Nov) shows only P0+P1+basic P2; P3-full/P8 are finished but held back for next semester's official reveal. Paper (P6) starts 27 Nov+. P4/P5/P7 are a conditional stretch tier, attempted in that order only if ahead of schedule.
+**Mid-Review was Mon 12 Oct 2026 (rescheduled from 26–30 Sep, then from 9 Oct); 4–8 Oct is a Mid-Review sprint, so P0–P3 dates were re-baselined on 4 Oct (IMPLEMENTATION_PLAN.md §16.3).** **Real engineering deadline: P0–P3(core)+P8 done by ~5 Nov 2026 (unchanged).** Official End-Review (~7–9 Nov, before End-Sem exams 10–26 Nov) shows only P0+P1+basic P2; P3-full/P8 are finished but held back for next semester's official reveal. Paper (P6) starts 27 Nov+. P4/P5/P7 are a conditional stretch tier, attempted in that order only if ahead of schedule.
 
 **How this file updates:** run `python scripts/update_tracker.py` after making progress (ask Claude to run it — it's cheap and safe to run anytime). It does two things:
 1. Recomputes the progress table below from checkbox counts.
@@ -13,7 +13,7 @@ Boxes with **no** `<!--auto:...-->` tag are judgment calls (e.g. "beats BiLSTM w
 <!-- PROGRESS_TABLE_START -->
 | Phase | Done | Total | % |
 |---|---|---|---|
-| P0 — Setup (target: 13 Oct 2026 — **You**; was 7 Oct) | 1 | 6 | 17% |
+| P0 — Setup (target: 13 Oct 2026 — **You**; was 7 Oct) | 2 | 6 | 33% |
 | P1 — Baselines (target: 18 Oct 2026 — **Partner** leads; was 14 Oct) | 0 | 8 | 0% |
 | P2 — GNN baseline (target: 22 Oct 2026 — **You** leads; was 21 Oct; this is the version shown at the official End-Review) | 0 | 6 | 0% |
 | P3 — Architecture increments (target: 31 Oct 2026 — **You** leads; core items 6.1/6.3/6.4 only this semester, 6.2 only if ahead of schedule; finished but held back from the official End-Review deck) | 0 | 7 | 0% |
@@ -24,7 +24,7 @@ Boxes with **no** `<!--auto:...-->` tag are judgment calls (e.g. "beats BiLSTM w
 | P8 — Edge deployment (Raspberry Pi / Jetson Nano) (target: 1-5 Nov 2026 — **Both**, joint; this semester this happens BEFORE P6 write-up, not after — demoed privately to mentor, revealed to panel next semester) | 0 | 9 | 0% |
 <!-- PROGRESS_TABLE_END -->
 
-*Last auto-check: 2026-10-03 19:34 UTC*
+*Last auto-check: 2026-10-16 19:27 UTC*
 
 ---
 
@@ -41,7 +41,7 @@ Calendar-driven, not implementation-driven — tracked separately from the P0-P8
   - [ ] Step 5: LR/SVM/RF with subject-level 5-fold CV (scaler fitted inside folds), UAR/macro-F1/AUC — 7 Oct
 - [ ] Subject-level 5-fold split file (label × gender) saved as CSV — 6 Oct — **[Partner]**
 - [ ] Mid-Review slides frozen + notebook Restart & Run All clean + two timed rehearsals (each presents the other's section) — 8 Oct — **[Both]**
-- [ ] Mid-Review presented — **Fri 9 Oct 2026** (rescheduled from 26–30 Sep)
+- [x] Mid-Review presented — **Mon 12 Oct 2026** (rescheduled from 26–30 Sep, then from 9 Oct)
 - [ ] End-Review deck assembled incrementally as P0/P1/P2 land — P0+P1+basic-P2 shown complete; P3-full and P8 named only under "Future Scope" — target 6 Nov 2026 — **[Both]**
 - [ ] P8 edge deployment demoed privately to mentor (not the panel) — target 5 Nov 2026 — **[Both]**
 - [ ] End-Review presented — target 7–9 Nov 2026 (before End-Sem Lab exams start 10 Nov)
@@ -57,7 +57,7 @@ Calendar-driven, not implementation-driven — tracked separately from the P0-P8
 - [ ] `src/data/build_graph.py` stub created (interface only, no edge logic yet) <!--auto:build_graph_stub-->
 - [ ] Cache built: `data/cache/DAIC_WOZ/<subject>.pt` for every subject <!--auto:cache_built-->
 - [ ] Set A extras appended to cache from raw audio + transcripts: CPP, syllable rate, articulation rate, speech-to-pause ratio, pause stats, F0 slope, words/sec, response latency — `src/data/features_prosody.py` (see plan §3 table)
-- [ ] EDA notebook: label balance, gender split, interview-length distribution <!--auto:eda_notebook-->
+- [x] EDA notebook: label balance, gender split, interview-length distribution <!--auto:eda_notebook-->
 
 ## P1 — Baselines (target: 18 Oct 2026 — **Partner** leads; was 14 Oct)
 
