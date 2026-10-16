@@ -2,7 +2,9 @@
 
 Task breakdown of [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md), by phase. See IMPLEMENTATION_PLAN.md §0.5 for this semester's compressed timeline, team split, and dual-track presentation strategy — phase headings below carry target dates from that plan. IMPLEMENTATION_PLAN.md §16 is the authoritative day-to-day calendar.
 
-**Mid-Review was Mon 12 Oct 2026 (rescheduled from 26–30 Sep, then from 9 Oct); 4–8 Oct is a Mid-Review sprint, so P0–P3 dates were re-baselined on 4 Oct (IMPLEMENTATION_PLAN.md §16.3).** **Real engineering deadline: P0–P3(core)+P8 done by ~5 Nov 2026 (unchanged).** Official End-Review (~7–9 Nov, before End-Sem exams 10–26 Nov) shows only P0+P1+basic P2; P3-full/P8 are finished but held back for next semester's official reveal. Paper (P6) starts 27 Nov+. P4/P5/P7 are a conditional stretch tier, attempted in that order only if ahead of schedule.
+**Mid-Review was Mon 12 Oct 2026 (rescheduled from 26–30 Sep, then from 9 Oct); 4–8 Oct was the Mid-Review sprint, and P0–P3 dates were re-baselined on 4 Oct (IMPLEMENTATION_PLAN.md §16.3).** **Real engineering deadline: P0–P3(core)+P8 done by ~5 Nov 2026 (unchanged).** Official End-Review (~7–9 Nov, before End-Sem exams 10–26 Nov) shows only P0+P1+basic P2; P3-full/P8 are finished but held back for next semester's official reveal. Paper (P6) starts 27 Nov+. P4/P5/P7 are a conditional stretch tier, attempted in that order only if ahead of schedule.
+
+**Status as of 17 Oct 2026:** Mid-Review done (12 Oct). **P0 is behind** — its 13 Oct target and Gate A (cache for all 189 subjects) were missed: no `src/` code or `data/cache/` yet, and `torch`, `torch-geometric`, `opensmile`, `praat-parselmouth` and `vaderSentiment` are still not installed in `speech-dep` (plan said by 10 Oct). P1 (target 18 Oct) has not started. Descope triggers coming up (IMPLEMENTATION_PLAN.md §16.3): if P1 is not done by **Wed 21 Oct**, drop the wav2vec2 probe and uncached Set A extras; if P2 is not done by **Sat 24 Oct**, start P3 with 6.1 + 6.4 only.
 
 **How this file updates:** run `python scripts/update_tracker.py` after making progress (ask Claude to run it — it's cheap and safe to run anytime). It does two things:
 1. Recomputes the progress table below from checkbox counts.
@@ -13,7 +15,7 @@ Boxes with **no** `<!--auto:...-->` tag are judgment calls (e.g. "beats BiLSTM w
 <!-- PROGRESS_TABLE_START -->
 | Phase | Done | Total | % |
 |---|---|---|---|
-| P0 — Setup (target: 13 Oct 2026 — **You**; was 7 Oct) | 2 | 6 | 33% |
+| P0 — Setup (target: 13 Oct 2026 — **You**; was 7 Oct) | 2 | 7 | 29% |
 | P1 — Baselines (target: 18 Oct 2026 — **Partner** leads; was 14 Oct) | 0 | 8 | 0% |
 | P2 — GNN baseline (target: 22 Oct 2026 — **You** leads; was 21 Oct; this is the version shown at the official End-Review) | 0 | 6 | 0% |
 | P3 — Architecture increments (target: 31 Oct 2026 — **You** leads; core items 6.1/6.3/6.4 only this semester, 6.2 only if ahead of schedule; finished but held back from the official End-Review deck) | 0 | 7 | 0% |
@@ -24,7 +26,7 @@ Boxes with **no** `<!--auto:...-->` tag are judgment calls (e.g. "beats BiLSTM w
 | P8 — Edge deployment (Raspberry Pi / Jetson Nano) (target: 1-5 Nov 2026 — **Both**, joint; this semester this happens BEFORE P6 write-up, not after — demoed privately to mentor, revealed to panel next semester) | 0 | 9 | 0% |
 <!-- PROGRESS_TABLE_END -->
 
-*Last auto-check: 2026-10-16 19:27 UTC*
+*Last auto-check: 2026-10-16 19:31 UTC*
 
 ---
 
@@ -32,15 +34,15 @@ Boxes with **no** `<!--auto:...-->` tag are judgment calls (e.g. "beats BiLSTM w
 
 Calendar-driven, not implementation-driven — tracked separately from the P0-P8 phase checklist below since it doesn't map 1:1 to the technical work. See IMPLEMENTATION_PLAN.md §0.5 for full rationale.
 
-- [ ] Mid-Review written deliverables drafted (Problem Statement, Motivation, Lit. Review, Research Gap, Objectives, Methodology) — originally 15 Sep; **status to be confirmed 4 Oct**, finish by 8 Oct — **[Both]**
-- [ ] Preliminary implementation for Mid-Review (pandas + sklearn baseline, no PyTorch yet) — `notebooks/01_mid_review_features_expanded.ipynb`, target 7 Oct 2026 — **[You]**
+- [x] Mid-Review written deliverables drafted (Problem Statement, Motivation, Lit. Review, Research Gap, Objectives, Methodology) — covered in `Mid_Review_Presentation.pptx` — **[Both]**
+- [x] Preliminary implementation for Mid-Review (pandas + sklearn baseline, no PyTorch yet) — `notebooks/01_mid_review_features_expanded.ipynb`; results in `results/mid_review/`, walkthrough in `Mid_Review_Notebook_Guide.pdf` — **[You]**
   - [x] Step 1: participant-only transcripts, labels, per-session summary (189 sessions)
-  - [ ] Step 2: timing features from transcripts (words/sec, response latency, pauses, fillers) — 4 Oct
-  - [ ] Step 3: COVAREP per-session mean/std on participant frames (voiced-only for F0) — 5 Oct
-  - [ ] Step 4: depressed vs. non-depressed plots + Mann–Whitney U, effect size, BH-FDR — 6 Oct
-  - [ ] Step 5: LR/SVM/RF with subject-level 5-fold CV (scaler fitted inside folds), UAR/macro-F1/AUC — 7 Oct
-- [ ] Subject-level 5-fold split file (label × gender) saved as CSV — 6 Oct — **[Partner]**
-- [ ] Mid-Review slides frozen + notebook Restart & Run All clean + two timed rehearsals (each presents the other's section) — 8 Oct — **[Both]**
+  - [x] Step 2: timing features from transcripts (words/sec, response latency, pauses, fillers)
+  - [x] Step 3: COVAREP per-session mean/std on participant frames (voiced-only for F0)
+  - [x] Step 4: depressed vs. non-depressed plots + Mann–Whitney U, effect size, BH-FDR (raw and gender-normalised, plus train-only stability check)
+  - [x] Step 5: 12 classifiers on the official dev split + repeated stratified 5-fold CV (scaler fitted inside folds), UAR/macro-F1/AUC, bootstrap CIs, feature-group comparison, pruning/RFE, latency, AVEC 2016 comparison
+- [ ] Subject-level 5-fold split file (label × gender) saved as CSV — **[Partner]** — not done: the notebook builds its folds in code, nothing saved; still needed as the P1 CV harness input
+- [x] Mid-Review slides frozen + notebook Restart & Run All clean (57 cells, sequential, no errors) + rehearsals — **[Both]**
 - [x] Mid-Review presented — **Mon 12 Oct 2026** (rescheduled from 26–30 Sep, then from 9 Oct)
 - [ ] End-Review deck assembled incrementally as P0/P1/P2 land — P0+P1+basic-P2 shown complete; P3-full and P8 named only under "Future Scope" — target 6 Nov 2026 — **[Both]**
 - [ ] P8 edge deployment demoed privately to mentor (not the panel) — target 5 Nov 2026 — **[Both]**
@@ -53,6 +55,7 @@ Calendar-driven, not implementation-driven — tracked separately from the P0-P8
 ## P0 — Setup (target: 13 Oct 2026 — **You**; was 7 Oct)
 
 - [x] DAIC-WOZ downloaded: audio + transcripts + COVAREP + FORMANT + splits, 189/189 sessions <!--auto:daic_downloaded-->
+- [ ] Environment: `torch`, `torch-geometric`, `opensmile`, `praat-parselmouth`, `vaderSentiment` installed in `speech-dep`; versions pinned in `requirements.txt`
 - [ ] `src/data/preprocess.py` written (Ellie-turn stripping, transcript-timestamp alignment) <!--auto:preprocess_written-->
 - [ ] `src/data/build_graph.py` stub created (interface only, no edge logic yet) <!--auto:build_graph_stub-->
 - [ ] Cache built: `data/cache/DAIC_WOZ/<subject>.pt` for every subject <!--auto:cache_built-->
@@ -67,7 +70,7 @@ Calendar-driven, not implementation-driven — tracked separately from the P0-P8
 - [ ] Feature-group ablation on SVM/RF: each guide group alone, Set A vs. Set A+C
 - [ ] BiLSTM/GRU baseline <!--auto:bilstm_baseline-->
 - [ ] wav2vec2 linear-probe baseline <!--auto:wav2vec_probe_baseline-->
-- [ ] Baseline numbers checked against published AVEC 2016 DAIC-WOZ speech baselines
+- [ ] Baseline numbers checked against published AVEC 2016 DAIC-WOZ speech baselines (already done for the Mid-Review session-level features, notebook 5m; repeat for the P1 baselines)
 - [ ] CV harness manually verified to not leak speakers across folds
 
 ## P2 — GNN baseline (target: 22 Oct 2026 — **You** leads; was 21 Oct; this is the version shown at the official End-Review)
